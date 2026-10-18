@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: graph-mail-receiver
+  datasource:
+    # Mails stored by "new mails only" pulls, and the delta sync state. Flyway creates the tables
+    # (src/main/resources/db/migration). The file is plain, unencrypted mailbox content; data/ is git-ignored.
+    url: ${GRAPH_DB_URL:jdbc:h2:file:./data/graph-mail}
+    username: sa
+    password: ""
+  http:
+    clients:
+      # Bound every call to Entra ID and Graph, so a stalled connection fails the pull instead of hanging it. Used by
+      # REST mode's clients and, through SdkMailSource, by the Graph SDK's and azure-identity's clients.
+      connect-timeout: 5s
+      read-timeout: 30s
+      # azure-identity brings Reactor Netty along, which Boot would otherwise pick for RestClient; keep the JDK client.
+      imperative:
+        factory: jdk
+
+graph:
+  # The mode the page starts with: demo (generated emails, no credentials), rest (@HttpExchange) or sdk (Graph SDK).
+  # The page can switch per pull; rest and sdk need the four settings below.
+  mode: ${GRAPH_MODE:demo}
+  tenant-id: ${GRAPH_TENANT_ID:}
+  client-id: ${GRAPH_CLIENT_ID:}
+  client-secret: ${GRAPH_CLIENT_SECRET:}
+  mailbox: ${GRAPH_MAILBOX:}
+  # How far back the first "new mails only" pull looks when nothing is stored yet.
+  initial-sync-window: ${GRAPH_INITIAL_SYNC_WINDOW:30d}
+
+logging:
+  level:
+    root: INFO
+    org.example.graphmail: DEBUG
+    org.springframework.web.servlet.DispatcherServlet: DEBUG

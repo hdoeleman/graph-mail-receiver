@@ -1,0 +1,5 @@
+target/
+/config/
+.idea/
+*.iml
+/data/

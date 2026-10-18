@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>org.example</groupId>
+    <artifactId>graph-mail-receiver</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>graph-mail-receiver</name>
+    <description>Pulls email from a mailbox through the Microsoft Graph API and shows it in a web page</description>
+
+    <properties>
+        <java.version>25</java.version>
+        <!--
+          Newer patch releases than Spring Boot 4.1.1 manages, for security advisories (checked against OSV.dev):
+          Jackson 2.21.5 / 3.1.5 (DoS issues, fixed in 2.21.7 / 3.1.7) and Tomcat 11.0.24 (authentication
+          bypasses, fixed in 11.0.25). Remove each override once a Spring Boot release manages that version or newer.
+        -->
+        <jackson-2-bom.version>2.21.8</jackson-2-bom.version>
+        <jackson-bom.version>3.1.8</jackson-bom.version>
+        <tomcat.version>11.0.27</tomcat.version>
+        <microsoft-graph.version>6.71.0</microsoft-graph.version>
+        <azure-identity.version>1.18.7</azure-identity.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-restclient</artifactId>
+        </dependency>
+        <!-- REST mode: client-credentials tokens for the @HttpExchange Graph client -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-oauth2-client</artifactId>
+        </dependency>
+        <!-- Stored emails and delta sync state: an H2 file database, Flyway migrations, Spring Data JDBC -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- SDK mode: the Microsoft Graph Java SDK and its Entra ID credentials -->
+        <dependency>
+            <groupId>com.microsoft.graph</groupId>
+            <artifactId>microsoft-graph</artifactId>
+            <version>${microsoft-graph.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>${azure-identity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- @AutoConfigureTestDatabase: tests always get their own embedded database, whatever is configured -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

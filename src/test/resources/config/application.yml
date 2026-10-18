@@ -1,0 +1,6 @@
+# Test-only default (classpath:config/ outranks classpath:application.yml): an in-memory database per test context.
+# The tests that use the database also carry @AutoConfigureTestDatabase, which replaces the datasource with an
+# embedded one even when a local config/application.yml or SPRING_DATASOURCE_URL names a real database.
+spring:
+  datasource:
+    url: jdbc:h2:mem:${random.uuid};DB_CLOSE_DELAY=-1
